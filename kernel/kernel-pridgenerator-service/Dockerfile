@@ -16,4 +16,4 @@ EXPOSE 8100
 #     java -jar -Dspring.cloud.config.label="${spring_config_label_env}" -Dspring.profiles.active="${active_profile_env}" -Dspring.cloud.config.uri="${spring_config_url_env}" kernel-pridgenerator-service.jar ; \
 #     fi
 
-CMD ["java","-jar","kernel-pridgenerator-service.jar"]
+CMD ["java","-jar", "-Dspring.cloud.config.label=master", "-Dspring.cloud.config.name=kernel", "-Dspring.profiles.active=qa", "-Dspring.cloud.config.uri=http://kernel-config-server:51000/config","kernel-pridgenerator-service.jar"]
