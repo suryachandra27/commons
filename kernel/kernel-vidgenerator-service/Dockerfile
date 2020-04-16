@@ -7,4 +7,4 @@ COPY ./target/kernel-vidgenerator-service-*.jar kernel-vidgenerator-service.jar
 
 EXPOSE 8099
 
-CMD ["java","-jar","kernel-vidgenerator-service.jar"]
+CMD ["java","-jar", "-Dspring.cloud.config.label=master", "-Dspring.cloud.config.name=kernel", "-Dspring.profiles.active=qa", "-Dspring.cloud.config.uri=http://kernel-config-server:51000/config","kernel-vidgenerator-service.jar"]
