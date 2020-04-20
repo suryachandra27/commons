@@ -33,8 +33,9 @@ public class SSLConfig {
 
 		TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
 
+		SSLContext sslContext =null;
 		 try {
-			SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom()
+			sslContext = org.apache.http.ssl.SSLContexts.custom()
 					.loadKeyMaterial(new
 									File(environment.getProperty("server.ssl.key-store")),
 							environment.getProperty("server.ssl.key-store-password").toCharArray(),
