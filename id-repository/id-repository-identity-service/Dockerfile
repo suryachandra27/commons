@@ -58,11 +58,14 @@ CMD if [ "$is_glowroot_env" = "present" ]; then \
     java -Dloader.path=/kernel-ref-idobjectvalidator-0.9.1.jar -jar -javaagent:glowroot/glowroot.jar -Dserver.ssl.key-alias="${ssl_key_alias}" -Dspring.cloud.config.label="${spring_config_label_env}" -Dspring.profiles.active="${active_profile_env}"  -Dspring.cloud.config.uri="${spring_config_url_env}" id-repository-identity-service.jar ; \
     else \
     wget "${artifactory_url_env}"/artifactory/libs-release-local/io/mosip/kernel/kernel-ref-idobjectvalidator/0.9.1/kernel-ref-idobjectvalidator-0.9.1.jar kernel-ref-idobjectvalidator-0.9.1.jar ; \
-        wget "${artifactory_url_env}"/artifactory/libs-release-local/io/mosip/testing/cert/consul-template.zip ; \
-        apt-get update && apt-get install -y unzip openssl ; \
-        unzip consul-template.zip ; \
-        ./consul-template -config=/etc/consul-template.d/config.hcl ; \
-        rm -rf ./cert/* ; \
+    wget "${artifactory_url_env}"/artifactory/libs-release-local/io/mosip/testing/cert/consul-template.zip ; \
+    apt-get update && apt-get install -y unzip openssl ; \
+    unzip consul-template.zip ; \
+    ./consul-template -config=/etc/consul-template.d/config.hcl ; \
+    rm -rf ./cert/* ; \
+
+-Dserver.ssl.key-alias="${ssl_key_alias}"
+
     java -Dloader.path=/kernel-ref-idobjectvalidator-0.9.1.jar -jar -Dserver.ssl.key-alias="${ssl_key_alias}" -Dspring.cloud.config.label="${spring_config_label_env}" -Dspring.profiles.active="${active_profile_env}"  -Dspring.cloud.config.uri="${spring_config_url_env}" id-repository-identity-service.jar ; \
     fi
 
