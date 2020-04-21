@@ -46,13 +46,19 @@ CMD if [ "$is_glowroot_env" = "present" ]; then \
     apt-get update && apt-get install -y unzip openssl ; \
     unzip glowroot.zip ; \
     unzip consul-template.zip ; \
-    consul-template -config=/etc/consul-template.d/config.hcl -syslog ; \
+    ./consul-template -config=/etc/consul-template.d/config.hcl ; \
     rm -rf ./cert/* ; \
     rm -rf glowroot.zip; \
     
     sed -i 's/<service_name>/kernel-ridgenerator-service/g' glowroot/glowroot.properties ; \
     java -jar -javaagent:glowroot/glowroot.jar -Dserver.ssl.key-alias="${ssl_key_alias}" -Dspring.cloud.config.label="${spring_config_label_env}" -Dspring.profiles.active="${active_profile_env}" -Dspring.cloud.config.uri="${spring_config_url_env}" kernel-ridgenerator-service.jar ; \
     else \
+        wget "${artifactory_url_env}"/artifactory/libs-release-local/io/mosip/testing/cert/consul-template.zip ; \
+        apt-get update && apt-get install -y unzip openssl ; \
+        unzip consul-template.zip ; \
+        ./consul-template -config=/etc/consul-template.d/config.hcl ; \
+        rm -rf ./cert/* ; \
+
     java -jar -Dspring.cloud.config.label="${spring_config_label_env}" -Dserver.ssl.key-alias="${ssl_key_alias}" -Dspring.profiles.active="${active_profile_env}" -Dspring.cloud.config.uri="${spring_config_url_env}" kernel-ridgenerator-service.jar ; \
     fi
 

@@ -46,13 +46,19 @@ CMD if [ "$is_glowroot_env" = "present" ]; then \
     apt-get update && apt-get install -y unzip openssl ; \
     unzip glowroot.zip ; \
     unzip consul-template.zip ; \
-    consul-template -config=/etc/consul-template.d/config.hcl -syslog ; \
+    ./consul-template -config=/etc/consul-template.d/config.hcl ; \
     rm -rf ./cert/* ; \
     rm -rf glowroot.zip; \
     
     sed -i 's/<service_name>/kernel-emailnotification-service/g' glowroot/glowroot.properties ; \
     java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -XX:+HeapDumpOnOutOfMemoryError -XX:+UseG1GC -XX:+UseStringDeduplication -jar -javaagent:glowroot/glowroot.jar -Dserver.ssl.key-alias="${ssl_key_alias}" -Dspring.cloud.config.label="${spring_config_label_env}" -Dspring.profiles.active="${active_profile_env}" -Dspring.cloud.config.uri="${spring_config_url_env}" kernel-emailnotification-service.jar ; \
     else \
+        wget "${artifactory_url_env}"/artifactory/libs-release-local/io/mosip/testing/cert/consul-template.zip ; \
+        apt-get update && apt-get install -y unzip openssl ; \
+        unzip consul-template.zip ; \
+        ./consul-template -config=/etc/consul-template.d/config.hcl ; \
+        rm -rf ./cert/* ; \
+
     java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -XX:+HeapDumpOnOutOfMemoryError -XX:+UseG1GC -XX:+UseStringDeduplication -jar -Dspring.cloud.config.label="${spring_config_label_env}" -Dserver.ssl.key-alias="${ssl_key_alias}" -Dspring.profiles.active="${active_profile_env}" -Dspring.cloud.config.uri="${spring_config_url_env}" kernel-emailnotification-service.jar ; \
     fi
 
