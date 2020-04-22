@@ -14,7 +14,7 @@ vault{
 
 template {
   contents = <<EOH
-    {{- with secret "<PathForCert>" "common_name=<UrlOfApp>" "alt_names=<AltUrlOfApp>" "ttl=150h" -}}
+    {{- with secret "<PathForCert>" "common_name=<UrlOfApp>" "ttl=150h" -}}
     {{- .Data.issuing_ca -}}
     {{ end }}
   EOH
@@ -26,7 +26,7 @@ template {
 
 template {
   contents = <<EOH
-    {{- with secret "<PathForCert>" "common_name=<UrlOfApp>" "alt_names=<AltUrlOfApp>" "ttl=150h" -}}
+    {{- with secret "<PathForCert>" "common_name=<UrlOfApp>" "alt_names=/idrepository/v1/identity" "ttl=150h" -}}
     {{- .Data.certificate -}}
     {{ end }}
   EOH
@@ -36,7 +36,7 @@ template {
 
 template {
   contents = <<EOH
-    {{- with secret "<PathForCert>" "common_name=<UrlOfApp>" "alt_names=<AltUrlOfApp>" "ttl=150h" -}}
+    {{- with secret "<PathForCert>" "common_name=<UrlOfApp>" "alt_names=/idrepository/v1/identity" "ttl=150h" -}}
     {{- .Data.private_key -}}
     {{ end }}
   EOH
