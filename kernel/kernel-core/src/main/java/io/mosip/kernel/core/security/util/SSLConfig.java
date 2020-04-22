@@ -51,14 +51,10 @@ public class SSLConfig {
 		} catch (UnrecoverableKeyException e) {
 			e.printStackTrace();
 		}
-		/*SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy)
-				.build();
-*/
-		/*SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);*/
 		SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext, new String[] { "TLSv1.2" }, null,
 				SSLConnectionSocketFactory.
-						//ALLOW_ALL_HOSTNAME_VERIFIER);
-								getDefaultHostnameVerifier());
+						ALLOW_ALL_HOSTNAME_VERIFIER);
+								//getDefaultHostnameVerifier());
 
 		CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
