@@ -13,7 +13,7 @@ import java.io.File;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.TrustStrategy;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -31,11 +31,11 @@ public class SSLConfig {
 	public RestTemplate restTemplateConfig()
 			throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 
-		TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
+		//TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
 
 		SSLContext sslContext =null;
 		 try {
-			sslContext = org.apache.http.ssl.SSLContexts.custom()
+			sslContext = new SSLContextBuilder()
 					.loadKeyMaterial(new
 									File(environment.getProperty("server.ssl.key-store")),
 							environment.getProperty("server.ssl.key-store-password").toCharArray(),
@@ -51,11 +51,12 @@ public class SSLConfig {
 		} catch (UnrecoverableKeyException e) {
 			e.printStackTrace();
 		}
-		SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext, new String[] { "TLSv1.2" }, null,
+		 SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
+		/*SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext, new String[] { "TLSv1.2" }, null,
 				SSLConnectionSocketFactory.
 						ALLOW_ALL_HOSTNAME_VERIFIER);
 								//getDefaultHostnameVerifier());
-
+*/
 		CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 
