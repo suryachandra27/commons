@@ -199,9 +199,41 @@ public class AuthHandler extends AbstractUserDetailsAuthenticationProvider {
 //        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 //        requestFactory.setHttpClient(httpClient);            
 //        RestTemplate restTemplate = new RestTemplate(requestFactory);
-          RestTemplate restTemplate = new RestTemplate();
-          restTemplate.setInterceptors(Collections.singletonList(new RestTemplateInterceptor()));
-          return restTemplate;
+//          RestTemplate restTemplate = new RestTemplate();
+//          restTemplate.setInterceptors(Collections.singletonList(new RestTemplateInterceptor()));
+//          return restTemplate;
+
+		SSLContext sslContext =null;
+		try {
+			sslContext = new SSLContextBuilder()
+					.loadKeyMaterial(new
+									File(environment.getProperty("server.ssl.key-store")),
+							environment.getProperty("server.ssl.key-store-password").toCharArray(),
+							environment.getProperty("server.ssl.key-password").toCharArray())
+					.loadTrustMaterial(new
+									File(environment.getProperty("server.ssl.trust-store")),
+							environment.getProperty("server.ssl.trust-store-password").toCharArray())
+					.build();
+		} catch (CertificateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (UnrecoverableKeyException e) {
+			e.printStackTrace();
+		}
+//		SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
+		SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext, new String[] { "TLSv1.2" }, null,
+				SSLConnectionSocketFactory.
+						ALLOW_ALL_HOSTNAME_VERIFIER);
+								//getDefaultHostnameVerifier());
+
+		CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+
+		requestFactory.setHttpClient(httpClient);
+		RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setInterceptors(Collections.singletonList(new RestTemplateInterceptor()));
+		return restTemplate(requestFactory);
     }
 
 
