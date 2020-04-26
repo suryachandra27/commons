@@ -1,25 +1,24 @@
 package io.mosip.kernel.core.security.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 
 import javax.net.ssl.SSLContext;
-import java.io.File;
+
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 
 @Configuration
 public class SSLConfig {
@@ -35,7 +34,7 @@ public class SSLConfig {
 
 		SSLContext sslContext =null;
 		 try {
-			sslContext = new SSLContextBuilder()
+			sslContext = org.apache.http.ssl.SSLContexts.custom()
 					.loadKeyMaterial(new
 									File(environment.getProperty("server.ssl.key-store")),
 							environment.getProperty("server.ssl.key-store-password").toCharArray(),
@@ -52,6 +51,7 @@ public class SSLConfig {
 			e.printStackTrace();
 		}
 //		 SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
+		@SuppressWarnings("deprecation")
 		SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext, new String[] { "TLSv1.2" }, null,
 				SSLConnectionSocketFactory.
 						ALLOW_ALL_HOSTNAME_VERIFIER);

@@ -1,22 +1,33 @@
   
 package io.mosip.kernel.auth.adapter.handler;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import javax.net.ssl.SSLContext;
+import javax.security.cert.CertificateException;
+
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -94,6 +105,9 @@ public class AuthHandler extends AbstractUserDetailsAuthenticationProvider {
 	@Autowired
 	private ObjectMapper objectMapper;
 
+	@Autowired
+	private Environment environment;
+	
 	@Override
 	protected void additionalAuthenticationChecks(UserDetails userDetails,
 			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) throws AuthenticationException {
@@ -204,8 +218,8 @@ public class AuthHandler extends AbstractUserDetailsAuthenticationProvider {
 //          return restTemplate;
 
 		SSLContext sslContext =null;
-		try {
-			sslContext = new SSLContextBuilder()
+		 try {
+			sslContext = org.apache.http.ssl.SSLContexts.custom()
 					.loadKeyMaterial(new
 									File(environment.getProperty("server.ssl.key-store")),
 							environment.getProperty("server.ssl.key-store-password").toCharArray(),
@@ -214,14 +228,16 @@ public class AuthHandler extends AbstractUserDetailsAuthenticationProvider {
 									File(environment.getProperty("server.ssl.trust-store")),
 							environment.getProperty("server.ssl.trust-store-password").toCharArray())
 					.build();
-		} catch (CertificateException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (UnrecoverableKeyException e) {
 			e.printStackTrace();
+		} catch (java.security.cert.CertificateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-//		SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
+//		 SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
+		@SuppressWarnings("deprecation")
 		SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext, new String[] { "TLSv1.2" }, null,
 				SSLConnectionSocketFactory.
 						ALLOW_ALL_HOSTNAME_VERIFIER);
@@ -232,10 +248,16 @@ public class AuthHandler extends AbstractUserDetailsAuthenticationProvider {
 
 		requestFactory.setHttpClient(httpClient);
 		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.setRequestFactory(requestFactory);
         restTemplate.setInterceptors(Collections.singletonList(new RestTemplateInterceptor()));
-		return restTemplate(requestFactory);
+		return restTemplate;
     }
 
+
+	private RestTemplate restTemplate(HttpComponentsClientHttpRequestFactory requestFactory) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	public void addCorsFilter(HttpServer httpServer, Vertx vertx) {
 		Router router = Router.router(vertx);
